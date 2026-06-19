@@ -1,3 +1,5 @@
+5mins reading....
+
 # Company LinkedIn Enricher
 
 A lightweight Python utility for enriching company domains with their official company name and LinkedIn company page.
@@ -380,7 +382,50 @@ Pull requests and improvements are welcome.
 Suggestions for improving company name extraction, search quality, CSV handling, concurrency, and enrichment accuracy are encouraged.
 
 ---
+# Automatic Directory Creation
 
+The application automatically creates all required directories and files on startup.
+
+No manual setup is required.
+
+When `linkedin.py` starts, it will create the following structure if it does not already exist:
+text
+company-linkedin-enricher/
+
+├── linkedin.py
+├── README.md
+├── requirements.txt
+├── .gitignore
+├── domains.csv
+
+├── output/
+│   ├── linkedin_results.csv
+│   └── failed.csv
+
+├── logs/
+│   └── app.log
+
+├── checkpoints/
+│   └── progress.json
+
+└── cache/
+
+If any directory or file is missing, it will be created automatically.
+
+This allows the application to resume interrupted jobs and maintain organized output without requiring manual preparation.
+
+## First Run
+
+Simply execute:
+bash
+source venv/bin/activate
+
+python linkedin.py
+
+The application will initialize the project structure automatically.
+
+No additional configuration is necessary.
+-----------------
 # Version
 
 Current Version: **1.0.0**
