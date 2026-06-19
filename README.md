@@ -48,44 +48,44 @@ Recommended RAM:
 
 ## Update your server
 
-```bash
+bash
 sudo apt update
 sudo apt upgrade -y
-```
+
 
 ---
 
 ## Install required packages
 
-```bash
+bash
 sudo apt install -y \
 git \
 python3 \
 python3-pip \
 python3-venv
-```
+
 
 Verify Python:
 
-```bash
+bash
 python3 --version
-```
+
 
 Example:
 
-```
+
 Python 3.12.3
-```
+
 
 ---
 
 # Clone the repository
 
-```bash
+bash
 git clone https://github.com/YOUR_USERNAME/company-linkedin-enricher.git
 
 cd company-linkedin-enricher
-```
+
 
 Replace `YOUR_USERNAME` with your GitHub username.
 
@@ -93,47 +93,47 @@ Replace `YOUR_USERNAME` with your GitHub username.
 
 # Create a virtual environment
 
-```bash
+bash
 python3 -m venv venv
-```
+
 
 Activate it:
 
-```bash
+bash
 source venv/bin/activate
-```
+
 
 Your shell should now show:
 
-```
+
 (venv)
-```
+
 
 ---
 
 # Upgrade pip
 
-```bash
+bash
 pip install --upgrade pip
-```
+
 
 ---
 
 # Install Python dependencies
 
-```bash
+bash
 pip install \
 requests \
 beautifulsoup4 \
 lxml \
 ddgs
-```
+
 
 Or install from a `requirements.txt` file:
 
-```bash
+bash
 pip install -r requirements.txt
-```
+
 
 ---
 
@@ -141,38 +141,38 @@ pip install -r requirements.txt
 
 Create a file named `requirements.txt`:
 
-```text
+text
 requests>=2.32.0
 beautifulsoup4>=4.13.0
 lxml>=5.2.0
 ddgs>=9.0.0
-```
+
 
 Then install with:
 
-```bash
+bash
 pip install -r requirements.txt
-```
+
 
 ---
 
 # Running the script
 
-```bash
+bash
 python linkedin.py
-```
+
 
 The script will process the configured domains and create:
 
-```
+
 linkedin_results.csv
-```
+
 
 ---
 
 # Example Output
 
-```
+
 ============================================================
 
 {
@@ -182,19 +182,19 @@ linkedin_results.csv
 }
 
 ============================================================
-```
+
 
 ---
 
 # CSV Output
 
-```
+
 Company Name,Company Domain,LinkedIn
 
 Tiger Pistol,tigerpistol.com,https://www.linkedin.com/company/tiger-pistol/
 
 Sedgwick,sedgwick.com,https://www.linkedin.com/company/sedgwick/
-```
+
 
 ---
 
@@ -202,7 +202,7 @@ Sedgwick,sedgwick.com,https://www.linkedin.com/company/sedgwick/
 
 Edit the `domains` list inside `linkedin.py`:
 
-```python
+python
 domains = [
 
     "google.com",
@@ -214,13 +214,13 @@ domains = [
     "amazon.com",
 
 ]
-```
+
 
 Then run:
 
-```bash
+bash
 python linkedin.py
-```
+
 
 ---
 
@@ -228,19 +228,19 @@ python linkedin.py
 
 Instead of hardcoding domains, store them in a file:
 
-```
+
 domains.csv
-```
+
 
 Example:
 
-```csv
+csv
 Company Domain
 google.com
 apple.com
 microsoft.com
 amazon.com
-```
+
 
 Future versions can read directly from CSV for processing thousands of domains.
 
@@ -248,7 +248,7 @@ Future versions can read directly from CSV for processing thousands of domains.
 
 # Project Structure
 
-```
+
 company-linkedin-enricher/
 
 ├── linkedin.py
@@ -257,13 +257,13 @@ company-linkedin-enricher/
 ├── domains.csv
 ├── linkedin_results.csv
 └── venv/
-```
+
 
 ---
 
 # Updating the Project
 
-```bash
+bash
 cd company-linkedin-enricher
 
 git pull
@@ -271,27 +271,27 @@ git pull
 source venv/bin/activate
 
 pip install -r requirements.txt --upgrade
-```
+
 
 ---
 
 # Deactivating the Virtual Environment
 
-```bash
+bash
 deactivate
-```
+
 
 ---
 
 # Reactivating Later
 
-```bash
+bash
 cd company-linkedin-enricher
 
 source venv/bin/activate
 
 python linkedin.py
-```
+
 
 ---
 
@@ -301,15 +301,15 @@ python linkedin.py
 
 Example:
 
-```
+
 ModuleNotFoundError: No module named 'bs4'
-```
+
 
 Install dependencies:
 
-```bash
+bash
 pip install -r requirements.txt
-```
+
 
 ---
 
@@ -317,21 +317,21 @@ pip install -r requirements.txt
 
 Check:
 
-```bash
+bash
 which python
-```
+
 
 Expected output:
 
-```
+
 .../company-linkedin-enricher/venv/bin/python
-```
+
 
 If it points to `/usr/bin/python3`, activate the virtual environment:
 
-```bash
+bash
 source venv/bin/activate
-```
+
 
 ---
 
@@ -339,29 +339,29 @@ source venv/bin/activate
 
 Grant execute permission:
 
-```bash
+bash
 chmod +x linkedin.py
-```
+
 
 Run:
 
-```bash
+bash
 ./linkedin.py
-```
+
 
 or
 
-```bash
+bash
 python linkedin.py
-```
+
 
 ---
 
 ## Update Python packages
 
-```bash
+bash
 pip install --upgrade requests beautifulsoup4 lxml ddgs
-```
+
 
 ---
 
@@ -385,9 +385,9 @@ Suggestions for improving company name extraction, search quality, CSV handling,
 
 Current Version: **1.0.0**
 
-```
+
 Company LinkedIn Enricher
-Author: YOUR NAME
+Author: SCRIPTKID
 Python 3 Compatible
 Ubuntu / Debian Compatible
-```
+
