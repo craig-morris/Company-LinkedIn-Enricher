@@ -1,10 +1,11 @@
-python
 #!/usr/bin/env python3
 
 import csv
 import json
 import re
 import time
+from pathlib import Path
+from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
@@ -28,6 +29,84 @@ BAD_WORDS = {
     "better"
 }
 
+# ----------------------------------------------------
+# Project initialization
+# ----------------------------------------------------
+
+BASE = Path(".")
+
+OUTPUT = BASE / "output"
+LOGS = BASE / "logs"
+CHECKPOINTS = BASE / "checkpoints"
+CACHE = BASE / "cache"
+
+OUTPUT.mkdir(exist_ok=True)
+LOGS.mkdir(exist_ok=True)
+CHECKPOINTS.mkdir(exist_ok=True)
+CACHE.mkdir(exist_ok=True)
+
+RESULTS_FILE = OUTPUT / "linkedin_results.csv"
+FAILED_FILE = OUTPUT / "failed.csv"
+LOG_FILE = LOGS / "app.log"
+CHECKPOINT_FILE = CHECKPOINTS / "progress.json"
+
+if not RESULTS_FILE.exists():
+
+    with open(RESULTS_FILE, "w", newline="", encoding="utf-8") as f:
+
+        writer = csv.writer(f)
+
+        writer.writerow([
+            "Company Domain",
+            "Company Name",
+            "LinkedIn URL",
+            "Processed At",
+            "Status"
+        ])
+
+if not FAILED_FILE.exists():
+
+    with open(FAILED_FILE, "w", newline="", encoding="utf-8") as f:
+
+        writer = csv.writer(f)
+
+        writer.writerow([
+            "Company Domain",
+            "Reason"
+        ])
+
+if not CHECKPOINT_FILE.exists():
+
+    with open(CHECKPOINT_FILE, "w") as f:
+
+        json.dump(
+            {
+                "processed": 0,
+                "last_domain": None,
+                "updated": None
+            },
+            f,
+            indent=4
+        )
+
+LOG_FILE.touch(exist_ok=True)
+
+if not Path("domains.csv").exists():
+
+    with open(
+        "domains.csv",
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as f:
+
+        writer = csv.writer(f)
+        writer.writerow(["Company Domain"])
+
+    print()
+    print("domains.csv created.")
+    print("Add one domain per line and rerun.")
+    exit(0)
 
 def clean(text):
 
@@ -218,66 +297,154 @@ def enrich(domain):
     }
 
 
-domains = [
-
-    "eclipse-results.com",
-    "ohiofirstlandtitle.com",
-    "arnoldprinting.com",
-    "muohio.edu",
-    "cblhdesign.com",
-    "directoptions.com",
-    "cityarch.com",
-    "mraservices.com",
-    "jewishtoledo.org",
-    "rapidmailing.com",
-    "gf-wealth.com",
-    "everhard.com",
-    "remax.net",
-    "millsrunapts.com",
-    "tartanagency.com",
-    "brighton-science.com",
-    "urbansites.com",
-    "manningcontracting.com",
-    "easternlakecountychamber.org",
-    "gardnercorp.com",
-    "sedgwick.com",
-    "tigerpistol.com",
-
-]
-
-results = []
-
-for domain in domains:
-
-    print("=" * 60)
-
-    row = enrich(domain)
-
-    print(row)
-
-    results.append(row)
-
-    time.sleep(0.5)
+domains = []
 
 with open(
-    "linkedin_results.csv",
-    "w",
+    "domains.csv",
     newline="",
     encoding="utf-8"
 ) as f:
 
-    writer = csv.DictWriter(
-        f,
-        fieldnames=[
-            "Company Name",
+    reader = csv.DictReader(f)
+
+    for row in reader:
+
+        domain = row.get(
             "Company Domain",
-            "LinkedIn"
-        ]
-    )
+            ""
+        ).strip().lower()
 
-    writer.writeheader()
+        if domain:
 
-    writer.writerows(results)
+            domains.append(domain)
+
+domains = list(dict.fromkeys(domains))
+
+processed_domains = set()
+
+if RESULTS_FILE.exists():
+
+    with open(
+        RESULTS_FILE,
+        newline="",
+        encoding="utf-8"
+    ) as f:
+
+        reader = csv.DictReader(f)
+
+        for row in reader:
+
+            processed_domains.add(
+                row["Company Domain"].lower()
+            )
+
+domains = [
+
+    d for d in domains
+
+    if d not in processed_domains
+
+]
+
+print(f"Remaining domains: {len(domains)}")
+
+print(f"Loaded {len(domains)} unique domains")
 
 print()
-print("Saved linkedin_results.csv")
+
+processed = len(processed_domains)
+
+for domain in domains:
+
+    print("=" * 70)
+
+    print(domain)
+
+    try:
+
+        row = enrich(domain)
+
+        status = "Completed"
+
+        print(row)
+
+        with open(
+            RESULTS_FILE,
+            "a",
+            newline="",
+            encoding="utf-8"
+        ) as f:
+
+            writer = csv.writer(f)
+
+            writer.writerow([
+
+                row["Company Domain"],
+
+                row["Company Name"],
+
+                row["LinkedIn"],
+
+                datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
+
+                status
+
+            ])
+
+    except Exception as e:
+
+        with open(
+            FAILED_FILE,
+            "a",
+            newline="",
+            encoding="utf-8"
+        ) as f:
+
+            writer = csv.writer(f)
+
+            writer.writerow([
+
+                domain,
+
+                str(e)
+
+            ])
+
+    processed += 1
+
+    with open(
+        CHECKPOINT_FILE,
+        "w"
+    ) as f:
+
+        json.dump(
+
+            {
+
+                "processed": processed,
+
+                "last_domain": domain,
+
+                "updated": datetime.now().isoformat()
+
+            },
+
+            f,
+
+            indent=4
+
+        )
+
+    time.sleep(0.5)
+
+print()
+
+print("Enrichment completed.")
+
+print(f"Processed: {processed}")
+
+print(f"Results: {RESULTS_FILE}")
+
+print(f"Failed: {FAILED_FILE}")
